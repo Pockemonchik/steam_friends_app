@@ -1,11 +1,11 @@
-from fastapi import FastAPI,Body
+from fastapi import FastAPI
 import uvicorn
-from pydantic import BaseModel
+from users.views import router as user_router
 
-class CreateUser(BaseModel):
-    email: str
+
 
 app = FastAPI()
+app.include_router(user_router)
 
 @app.get("/")
 def hello_index():
@@ -14,25 +14,11 @@ def hello_index():
     }
 
 
-@app.get("/items/")
-def list_items():
-    return [
-        "t1",
-        "t2",
-        "t2",
-    ]
-
 @app.get("/hello/")
 def get_hello(name:str):
     return {"message": f"Hello {name}"}
 
-@app.post("/user/")
-def create_user(email: CreateUser):
-    return {"message": f"Hello {email}"}
 
-@app.get("/items/{item_id}")
-def get_item_by_id(item_id:int):
-    return {item_id}
 
 if __name__ == "__main__":
     uvicorn.run("main:app",reload=True)
