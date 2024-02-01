@@ -2,13 +2,13 @@ from typing import Annotated
 from fastapi import APIRouter,Path
 
 from users import crud
-from users.schemas import CreateUser
+from users.schemas import UserCreate
 router = APIRouter(prefix="/users", tags=['users'])
 
 
 
 @router.post("/")
-def create_user(user: CreateUser):
+def create_user(user: UserCreate):
     return crud.create_user(user_in=user)
 
 @router.get("/{user_id}/")
