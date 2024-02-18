@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 class UserBase(BaseModel):
-    name: str
+    username: str
     steam_token: str
 
 

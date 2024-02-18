@@ -1,5 +1,7 @@
 
-from sqlalchemy import declared_attr, Mapped,mapped_column, DeclarativeBase 
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import Mapped,mapped_column, DeclarativeBase
+
 
 
 class Base(DeclarativeBase):
