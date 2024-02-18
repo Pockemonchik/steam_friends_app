@@ -2,8 +2,8 @@ from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .schemas import UserCreate, UserUpdate, UserUpdatePartial
-from models import User as UserModel
+from .schemas import UserShemaCreate, UserShemaUpdate, UserShemaUpdatePartial
+from models import UserModel
 
 
 async def get_users(session: AsyncSession) -> list[UserModel]:
@@ -12,7 +12,7 @@ async def get_users(session: AsyncSession) -> list[UserModel]:
     users = result.scalars().all()
     return list(users)
 
-async def create_user(session: AsyncSession, user_in: UserCreate) -> UserModel:
+async def create_user(session: AsyncSession, user_in: UserShemaCreate) -> UserModel:
     user = UserModel(**user_in.model_dump())
     session.add(user)
     await session.commit()
@@ -24,7 +24,7 @@ async def get_user(session: AsyncSession, user_id: int) -> UserModel:
 async def update_user(
     session: AsyncSession,
     user: UserModel,
-    user_update: UserUpdate or UserUpdatePartial,
+    user_update: UserShemaUpdate or UserShemaUpdatePartial,
     partial: bool = False,
 ) -> UserModel:
     for name, value in user_update.model_dump(exclude_unset=partial).items():

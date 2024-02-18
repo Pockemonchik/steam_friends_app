@@ -2,6 +2,6 @@ from .base import Base
 from sqlalchemy.orm import Mapped 
 
 
-class User(Base):
+class UserModel(Base):
     username: Mapped[str]
     steam_token: Mapped[str]
