@@ -8,8 +8,13 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     pass
 
-class UserUpdate(UserBase):
+class UserUpdate(UserCreate):
     pass
+
+class UserUpdatePartial(UserCreate):
+    username: str or None
+    steam_token: str or None
+
 
 class User(UserBase):
     model_config = ConfigDict(from_attributes=True)
