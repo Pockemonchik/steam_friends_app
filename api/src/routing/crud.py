@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .schemas import UserShemaCreate, UserShemaUpdate, UserShemaUpdatePartial
+from api.src.schemas.user_shema import UserShemaCreate, UserShemaUpdate, UserShemaUpdatePartial
 from models import UserModel
 
 

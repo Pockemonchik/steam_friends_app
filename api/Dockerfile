@@ -5,8 +5,8 @@ FROM python:3.11
 WORKDIR /usr/src/app
 
 # set environment variables
-# ENV PYTHONDONTWRITEBYTECODE 1
-# ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 # install dependencies
 RUN pip install --upgrade pip
@@ -23,6 +23,6 @@ RUN chmod 777 /usr/src/app/entrypoint.sh
 
 # copy project
 COPY . .
-
-ENTRYPOINT ["sh", "entrypoint.sh"]
+ENV PYTHONPATH /usr/src/app/src
+# ENTRYPOINT ["sh", "entrypoint.sh"]
 # 
