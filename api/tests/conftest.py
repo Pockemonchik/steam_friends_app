@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 
 import pytest
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient, AsyncHTTPTransport, WSGITransport
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
@@ -15,6 +15,8 @@ from pydantic_settings import BaseSettings
 
 from src.main import app
 from src.db import DatabaseHelper
+from src.models import BaseModel
+
 
 BASE_DIR = Path(__file__).parent.parent
 
@@ -32,31 +34,17 @@ db_helper = DatabaseHelper(
     echo=settings.db_echo,
 )
 
-app.dependency_overrides[get_async_session] = override_get_async_session
-
 
 @pytest.fixture(autouse=True, scope="session")
 async def prepare_database():
-    async with engine_test.begin() as conn:
-        await conn.run_sync(metadata.create_all)
+    async with db_helper.engine.begin() as conn:
+        await conn.run_sync(BaseModel.metadata.create_all)
     yield
-    async with engine_test.begin() as conn:
-        await conn.run_sync(metadata.drop_all)
-
-
+    async with db_helper.engine.begin() as conn:
+        await conn.run_sync(BaseModel.metadata.drop_all)
 # SETUP
-@pytest.fixture(scope="session")
-def event_loop(request):
-    """Create an instance of the default event loop for each test case."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
-client = TestClient(app)
-
-
+transport = ASGITransport(app=app)
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=transport,base_url="http://localhost:8000") as ac:
         yield ac

@@ -7,7 +7,7 @@ from services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=['users'])
 
-@router.get("",
+@router.get("/",
             response_model=list[UserSchema])
 async def get_users(
     users_service: Annotated[UserService, Depends(user_service)],
