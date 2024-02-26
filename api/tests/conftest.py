@@ -50,5 +50,5 @@ transport = ASGITransport(app=app)
 
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(transport=transport, base_url="http://localhost:8000") as ac:
+    async with AsyncClient(transport=transport, base_url="http://test:8000") as ac:
         yield ac
