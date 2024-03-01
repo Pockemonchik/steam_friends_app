@@ -22,31 +22,19 @@ BASE_DIR = Path(__file__).parent
 
 # DATABASE
 
-db_helper_override = DatabaseHelper(
-    url=f"sqlite+aiosqlite:///{BASE_DIR}/test.sqlite3",
-    echo=False,
-)
-
-# class TestSettings(BaseSettings):
-#     db_url:str = f"sqlite+aiosqlite:///{BASE_DIR}/test.sqlite3"
-#     db_echo:bool = False
-
-# settings_override = TestSettings()
-
-# app.dependency_overrides[db_helper] = db_helper_override
-# app.dependency_overrides[settings] = settings_override
 
 @pytest.fixture(autouse=True, scope="session")
 async def prepare_database():
-    async with db_helper_override.engine.begin() as conn:
+    async with db_helper.engine.begin() as conn:
         await conn.run_sync(BaseModel.metadata.create_all)
     yield
-    # async with db_helper_override.engine.begin() as conn:
-    #     await conn.run_sync(BaseModel.metadata.drop_all)
+    async with db_helper.engine.begin() as conn:
+        await conn.run_sync(BaseModel.metadata.drop_all)
 
 
 # SETUP
 transport = ASGITransport(app=app)
+
 
 @pytest.fixture(scope="session")
 async def ac() -> AsyncGenerator[AsyncClient, None]:
