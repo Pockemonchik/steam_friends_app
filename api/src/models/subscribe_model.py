@@ -1,14 +1,23 @@
+from typing import TYPE_CHECKING
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from schemas.subscribe_shema import SubscribeSchema
 from .base_model import BaseModel
-from sqlalchemy.orm import Mapped 
-from schemas.user_schema import UserSchema
+
+if TYPE_CHECKING:
+    from models.user_model import UserModel
 
 
-class Subscribe(BaseModel):
-    username: Mapped[str]
-    steam_token: Mapped[str]
-    def to_read_model(self) -> UserSchema:
-        return UserSchema(
+class SubscribeModel(BaseModel):
+    __tablename__ = "subscribes"
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+    )
+    user: Mapped["UserModel"] = relationship(back_populates="subscribes")
+
+    def to_read_model(self) -> SubscribeSchema:
+        return SubscribeSchema(
             id=self.id,
-            username=self.username,
-            steam_token=self.steam_token,
+            user_id=self.user_id,
         )

@@ -24,5 +24,5 @@ RUN chmod 777 /usr/src/app/entrypoint.sh
 # copy project
 COPY . .
 ENV PYTHONPATH /usr/src/app/src
-# ENTRYPOINT ["sh", "entrypoint.sh"]
+ENTRYPOINT ["sh", "entrypoint.sh"]
 # 

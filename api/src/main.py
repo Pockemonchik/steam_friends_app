@@ -7,9 +7,6 @@ from routing.routers import all_routers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with db_helper.engine.begin() as conn:
-        await conn.run_sync(BaseModel.metadata.create_all)
-
     yield
 
 
