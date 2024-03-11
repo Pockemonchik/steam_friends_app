@@ -15,6 +15,17 @@ services:
       - db
     # restart: always 
     
+  bot:
+    build: ./bot
+    command: "python main.py"
+    tty: true
+    volumes:
+      - ./bot/:/usr/src/app/
+    ports:
+      - 2000:2000
+    env_file: 
+      - ./.env.dev
+    
   db:
     image: postgres:13.0-alpine
     volumes:
