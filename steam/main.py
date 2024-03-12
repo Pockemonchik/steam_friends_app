@@ -6,8 +6,7 @@ import json
 
 from aiogram import F
 import steam_service
-from aiokafka import AIOKafkaConsumer
-from produser import AIOWebProducer
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
 kafka_server: str = os.environ.get("KAFKA_SERVER", "broker:29092")
 kafka_notify_topic: str = os.environ.get("KAFKA_NOTIFY_TOPIC", "notify_friends")
@@ -16,12 +15,15 @@ kafka_client_id: str = os.environ.get("KAFKA_CLEIENT_ID", "python-producer")
 
 
 async def send_friends_info(tg_id, message) -> None:
-    message_to_produce = json.dumps({"telegram_id": tg_id, "message": message}).encode(
-        encoding="utf-8"
-    )
-    producer = AIOWebProducer(topic=kafka_notify_topic)
-    await producer.send(value=message_to_produce)
-    producer.stop()
+    message_to_produce = json.dumps(
+        {"telegram_id": tg_id, "message": message["friends"][0]["personaname"]}
+    ).encode(encoding="utf-8")
+    producer = AIOKafkaProducer(bootstrap_servers=kafka_server)
+    await producer.start()
+    try:
+        await producer.send_and_wait(kafka_notify_topic, message_to_produce)
+    finally:
+        await producer.stop()
 
 
 async def consume_friends() -> None:
@@ -39,15 +41,8 @@ async def consume_friends() -> None:
                 steam_id=str(serialized.get("steam_id")),
             )
             print(result)
-            message_to_produce = json.dumps(
-                {"telegram_id": serialized.get("telegram_id"), "message": result}
-            ).encode(encoding="utf-8")
-            producer = AIOWebProducer(topic=kafka_notify_topic)
-            await producer.start()
-            try:
-                await producer.send(value=message_to_produce)
-            finally:
-                await producer.stop()
+            await send_friends_info(serialized.get("telegram_id"), result)
+
     finally:
         await consumer.stop()
 
