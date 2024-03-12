@@ -15,7 +15,7 @@ async def test_user_add(ac: AsyncClient):
         "/users/",
         json={
             "username": "string",
-            "steam_token": "string",
+            "steam_id": "string",
         },
         headers={
             "accept": "application/json",
@@ -30,7 +30,7 @@ async def test_user_add(ac: AsyncClient):
 #         "/users/1/",
 #         json={
 #             "username": "string",
-#             "steam_token": "string",
+#             "steam_id": "string",
 #         },
 #         headers={
 #             "accept": "application/json",

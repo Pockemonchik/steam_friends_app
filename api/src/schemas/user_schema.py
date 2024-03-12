@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 
 class UserSchemaBase(BaseModel):
     username: str
-    steam_token: str
+    steam_id: str
 
 
 class UserSchemaCreate(UserSchemaBase):
@@ -13,7 +13,7 @@ class UserSchemaUpdate(UserSchemaCreate):
 
 class UserSchemaUpdatePartial(UserSchemaCreate):
     username: str | None
-    steam_token: str | None
+    steam_id: str | None
 
 
 class UserSchema(UserSchemaBase):
