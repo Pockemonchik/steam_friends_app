@@ -14,11 +14,13 @@ class UserModel(BaseModel):
 
     username: Mapped[str]
     steam_id: Mapped[str]
+    chat_id: Mapped[str]
     subscribes: Mapped[List["SubscribeModel"]] = relationship(back_populates="user")
 
     def to_read_model(self) -> UserSchema:
         return UserSchema(
             id=self.id,
+            chat_id=self.chat_id,
             username=self.username,
             steam_id=self.steam_id,
         )

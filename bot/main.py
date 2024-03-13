@@ -15,7 +15,8 @@ from config import settings
 from aiogram import F
 import steam_service
 from aiokafka import AIOKafkaConsumer
-
+from message_temlates import *
+import api_client
 
 dp = Dispatcher()
 bot = Bot(
@@ -34,28 +35,25 @@ async def consume() -> None:
         kafka_topic,
         bootstrap_servers=kafka_server,
     )
-    await consumer.start()
     try:
-        async for msg in consumer:
-            serialized = json.loads(msg.value)
-            await bot.send_message(
-                chat_id=serialized.get("telegram_id"),
-                text=serialized.get("message"),
-            )
-    finally:
+        await consumer.start()
+        try:
+            async for msg in consumer:
+                serialized = json.loads(msg.value)
+                await bot.send_message(
+                    chat_id=serialized.get("telegram_id"),
+                    text=serialized.get("message"),
+                )
+        except Exception as e:
+            print(e)
+            await consumer.stop()
+        finally:
+            await consumer.stop()
+    except Exception as e:
         await consumer.stop()
+        print(e)
 
 
-HELP_COMMAND = """
-<b>/help</b> - <em>список команд</em>
-<b>/start</b> - <em>старт бота</em>
-<b>/description</b> - <em>описание бота</em>
-<b>/friends</b> - <em>друзья в  сети</em>"""
-
-FRIEND_LIST = """
-<b>Друг 1</b> - <em>в сети</em>
-<b>Друг 2</b> - <em>Дота 2</em>
-"""
 ID_REGEX = r"\d{17}$"
 
 
@@ -78,28 +76,8 @@ async def start_handler(message: Message) -> None:
 
 @dp.message(Command("help"))
 async def help_handler(message: types.Message):
-    print("message.chat.id",message.chat.id)
+    print("message.chat.id", message.chat.id)
     await message.answer(text=HELP_COMMAND, parse_mode="HTML")
-    # await message.delete()
-
-
-@dp.message(Command("friends"))
-async def friends_handler(message: types.Message):
-    steam_data = steam_service.get_steam_user_friends_info("76561198381522154")
-    import json
-
-    gaming_friends = list(filter(lambda x: "gameextrainfo" in x, steam_data["friends"]))
-    # print(type(steam_data["fiends"]))
-    print(json.dumps(gaming_friends))
-    friend_list = []
-    for friend in gaming_friends:
-        friend_list.append(
-            "<b>{}</b> - <em>{}</em>".format(
-                friend["personaname"], friend["gameextrainfo"]
-            )
-        )
-    print("friend_list", friend_list)
-    await message.answer(text="\n".join(friend_list), parse_mode="HTML")
     # await message.delete()
 
 
@@ -124,11 +102,37 @@ async def description_handler(message: Message) -> None:
     )
 
 
+@dp.message(Command("friends"))
+async def friends_handler(message: types.Message):
+    steam_data = steam_service.get_steam_user_friends_info("76561198381522154")
+    import json
+
+    gaming_friends = list(filter(lambda x: "gameextrainfo" in x, steam_data["friends"]))
+    # print(type(steam_data["fiends"]))
+    print(json.dumps(gaming_friends))
+    friend_list = []
+    for friend in gaming_friends:
+        friend_list.append(
+            "<b>{}</b> - <em>{}</em>".format(
+                friend["personaname"], friend["gameextrainfo"]
+            )
+        )
+    print("friend_list", friend_list)
+    await message.answer(text="\n".join(friend_list), parse_mode="HTML")
+    # await message.delete()
+
+
 @dp.message(F.text.regexp(ID_REGEX).as_("digits"))
 async def id_handler(message: types.Message, digits: Match[str]):
     """Привязка steam id к ползователю"""
     print("found id")
-    await message.answer(text=message.text, parse_mode="HTML")
+    print(message.from_user.username, message.chat.id, message.text)
+    response = await api_client.register(
+        message.from_user.username,
+        str(message.chat.id),
+        message.text,
+    )
+    await message.answer(text=response, parse_mode="HTML")
     # await message.delete()
 
 
