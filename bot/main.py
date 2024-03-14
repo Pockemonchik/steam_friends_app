@@ -20,7 +20,6 @@ import api_client
 dp = Dispatcher()
 bot = Bot(
     token=os.environ.get("BOT_TOKEN", "6858161506:AAHGav0STjNJFDl6vqXe8oY9IZowHSwtIL8"),
-    # token=settings.bot_token,
     parse_mode=ParseMode.HTML,
 )
 
@@ -77,7 +76,7 @@ async def start_handler(message: Message) -> None:
 async def help_handler(message: types.Message):
     print("message.chat.id", message.chat.id)
     await message.answer(text=HELP_COMMAND, parse_mode="HTML")
-    # await message.delete()
+    await message.delete()
 
 
 @dp.message(Command("description"))
@@ -96,7 +95,28 @@ async def description_handler(message: Message) -> None:
 
     await message.answer(
         text=text,
-        #  parse_mode=None,
+        parse_mode=ParseMode.MARKDOWN_V2,
+    )
+
+
+@dp.message(Command("register"))
+async def register_handler(message: Message) -> None:
+    text = markdown.text(
+        markdown.markdown_decoration.quote(
+            "Бот предназначен для отслеживания\nактивности друзей в Steam\n"
+        ),
+        markdown.text(
+            markdown.bold(
+                "Что зарегистрировать\nсвой steam id \n отправлете его мне, пример -> \n"
+            ),
+            markdown.underline("76561198381522154"),
+            sep="\n",
+        ),
+        sep="\n",
+    )
+
+    await message.answer(
+        text=text,
         parse_mode=ParseMode.MARKDOWN_V2,
     )
 
@@ -111,19 +131,6 @@ async def friends_handler(message: types.Message):
         str(message.chat.id),
     )
     await message.answer(text=response, parse_mode="HTML")
-    # gaming_friends = list(filter(lambda x: "gameextrainfo" in x, steam_data["friends"]))
-    # # print(type(steam_data["fiends"]))
-    # print(json.dumps(gaming_friends))
-    # friend_list = []
-    # for friend in gaming_friends:
-    #     friend_list.append(
-    #         "<b>{}</b> - <em>{}</em>".format(
-    #             friend["personaname"], friend["gameextrainfo"]
-    #         )
-    #     )
-    # print("friend_list", friend_list)
-    # await message.answer(text="\n".join(friend_list), parse_mode="HTML")
-    # await message.delete()
 
 
 @dp.message(F.text.regexp(ID_REGEX).as_("digits"))
@@ -144,7 +151,6 @@ async def id_handler(message: types.Message, digits: Match[str]):
 async def not_hadle__handler(message: types.Message):
     """если не отловлено"""
     await message.answer(text=message.text, parse_mode="HTML")
-    # await message.delete()
 
 
 async def main() -> None:

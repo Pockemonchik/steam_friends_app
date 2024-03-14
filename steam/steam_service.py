@@ -1,9 +1,8 @@
 from steam import Steam
-import asyncio
+import os
 
-KEY = "53DCDE6701B169E877EADFDB023D78EA"
+KEY = os.environ.get("STEAM_KEY", "53DCDE6701B169E877EADFDB023D78EA")
 steam = Steam(KEY)
-
 
 # steam id 76561198381522154
 async def aoi_get_steam_user_info(steam_id: str):
@@ -31,7 +30,7 @@ def get_steam_user_friends_info(steam_id: str, filter_str: str = None):
     gaming_friends = list(
         map(
             lambda x: str(x["personaname"])
-            + " ---->>"
+            + " ---->> "
             + (x["gameextrainfo"] if "gameextrainfo" in x else "В сети")
             + "\n",
             online_friends,
@@ -39,15 +38,12 @@ def get_steam_user_friends_info(steam_id: str, filter_str: str = None):
     )
 
     result = "".join(gaming_friends)
-    print(result)
     return result
 
 
 def main() -> None:
     print(get_steam_user_friends_info("76561198381522154"))
 
-
-# gaming_friends = list(filter(lambda x: "gameextrainfo" in x, steam_data["friends"]))
 
 if __name__ == "__main__":
     main()
