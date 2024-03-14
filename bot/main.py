@@ -13,7 +13,6 @@ from aiogram.enums import ParseMode
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from config import settings
 from aiogram import F
-import steam_service
 from aiokafka import AIOKafkaConsumer
 from message_temlates import *
 import api_client
@@ -22,7 +21,7 @@ dp = Dispatcher()
 bot = Bot(
     token=os.environ.get("BOT_TOKEN", "6858161506:AAHGav0STjNJFDl6vqXe8oY9IZowHSwtIL8"),
     # token=settings.bot_token,
-    parse_mode=ParseMode.MARKDOWN_V2,
+    parse_mode=ParseMode.HTML,
 )
 
 kafka_server: str = os.environ.get("KAFKA_SERVER", "broker:29092")
@@ -104,21 +103,26 @@ async def description_handler(message: Message) -> None:
 
 @dp.message(Command("friends"))
 async def friends_handler(message: types.Message):
-    steam_data = steam_service.get_steam_user_friends_info("76561198381522154")
-    import json
 
-    gaming_friends = list(filter(lambda x: "gameextrainfo" in x, steam_data["friends"]))
-    # print(type(steam_data["fiends"]))
-    print(json.dumps(gaming_friends))
-    friend_list = []
-    for friend in gaming_friends:
-        friend_list.append(
-            "<b>{}</b> - <em>{}</em>".format(
-                friend["personaname"], friend["gameextrainfo"]
-            )
-        )
-    print("friend_list", friend_list)
-    await message.answer(text="\n".join(friend_list), parse_mode="HTML")
+    print("fetch friends id")
+    print(message.from_user.username, message.chat.id, message.text)
+    response = await api_client.fetch_friends(
+        message.from_user.username,
+        str(message.chat.id),
+    )
+    await message.answer(text=response, parse_mode="HTML")
+    # gaming_friends = list(filter(lambda x: "gameextrainfo" in x, steam_data["friends"]))
+    # # print(type(steam_data["fiends"]))
+    # print(json.dumps(gaming_friends))
+    # friend_list = []
+    # for friend in gaming_friends:
+    #     friend_list.append(
+    #         "<b>{}</b> - <em>{}</em>".format(
+    #             friend["personaname"], friend["gameextrainfo"]
+    #         )
+    #     )
+    # print("friend_list", friend_list)
+    # await message.answer(text="\n".join(friend_list), parse_mode="HTML")
     # await message.delete()
 
 
@@ -128,9 +132,9 @@ async def id_handler(message: types.Message, digits: Match[str]):
     print("found id")
     print(message.from_user.username, message.chat.id, message.text)
     response = await api_client.register(
-        message.from_user.username,
-        str(message.chat.id),
-        message.text,
+        username=message.from_user.username,
+        chat_id=str(message.chat.id),
+        steam_id=message.text,
     )
     await message.answer(text=response, parse_mode="HTML")
     # await message.delete()

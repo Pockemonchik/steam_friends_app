@@ -35,7 +35,7 @@ class SQLAlchemyRepository(AbstractRepository):
         self.session = session
 
     async def add_one(self, data: dict) -> int:
-        
+
         stmt = insert(self.model).values(**data).returning(self.model.id)
         obj = await self.session.execute(stmt)
         await self.session.commit()
@@ -43,7 +43,6 @@ class SQLAlchemyRepository(AbstractRepository):
         return obj.scalar_one()
 
     async def find_one(self, id: int):
-        
         obj = await self.session.get(self.model, id)
         if obj is None:
             await self.session.close()
@@ -52,7 +51,7 @@ class SQLAlchemyRepository(AbstractRepository):
         return obj.to_read_model()
 
     async def find_all(self):
-        
+
         stmt = select(self.model)
         obj = await self.session.execute(stmt)
         await self.session.close()
@@ -60,7 +59,7 @@ class SQLAlchemyRepository(AbstractRepository):
         return obj
 
     async def update_one(self, id: int, data: dict):
-        
+
         obj = await self.session.get(self.model, id)
         if obj is None:
             await self.session.close()
@@ -68,11 +67,11 @@ class SQLAlchemyRepository(AbstractRepository):
         for name, value in data.items():
             setattr(obj, name, value)
         await self.session.commit()
-        
+
         return obj.id
 
     async def delete_one(self, id: int):
-        
+
         obj = await self.session.get(self.model, id)
         if obj is None:
             await self.session.close()

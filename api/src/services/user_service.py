@@ -19,6 +19,10 @@ class UserService:
         user = await self.users_repo.find_one(id=id)
         return user
 
+    async def get_user_by_name(self, name: str):
+        user = await self.users_repo.find_one_by_name(name=name)
+        return user
+
     async def update_user(self, id: int, user: UserSchemaCreate):
         user_dict = user.model_dump()
         user = await self.users_repo.update_one(id=id, data=user_dict)
