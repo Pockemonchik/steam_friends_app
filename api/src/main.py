@@ -23,6 +23,12 @@ async def send_notify() -> None:
     producer = AIOWebProducer(topic=settings.kafka_notify_topic)
     await producer.send(value=message_to_produce)
 
+@app.post("/create_task")
+async def create_task() -> None:
+    from .celery.tasks import test1
+    test1.delay()
+    return 0
+
 
 @app.post("/send_steam_task")
 async def send_steam_task() -> None:
