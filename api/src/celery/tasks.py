@@ -5,10 +5,16 @@ from .worker import worker
 from celery.schedules import crontab
 
 
-@worker.steam_parse_task(name="steam_parse_task")
+@worker.task(name="steam_parse_task")
 def steam_parse_task():
     time.sleep(int(1) * 3)
-    print("Test task created")
+    print("steam_parse_task")
+    return True
+
+@worker.task(name="test")
+def test():
+    time.sleep(int(1) * 3)
+    print("Test task ")
     return True
 
 

@@ -15,5 +15,13 @@ worker.conf.update(
     result_expires=3600,
 )
 
+worker.conf.beat_schedule = {
+    'add-every-30-seconds': {
+        'task': 'test',
+        'schedule': 4.0,
+        'args': ()
+    },
+}
+
 if __name__ == "__main__":
     worker.start()
