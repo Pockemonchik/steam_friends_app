@@ -15,9 +15,13 @@ class SubscribeModel(BaseModel):
         ForeignKey("users.id"),
     )
     user: Mapped["UserModel"] = relationship(back_populates="subscribes")
+    gamer_name:Mapped[str]
+    game: Mapped[str]
 
     def to_read_model(self) -> SubscribeSchema:
         return SubscribeSchema(
             id=self.id,
             user_id=self.user_id,
+            gamer_name=self.gamer_name,
+            game=self.game,
         )

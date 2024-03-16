@@ -21,6 +21,14 @@ async def get_subs(
     subs = await subs_service.get_subs()
     return subs
 
+@router.get("/", response_model=list[SubscribeSchema])
+async def get_subs_by_user(
+    user_name:str,
+    subs_service: Annotated[SubscribeService, Depends(subs_service)],
+):
+    subs = await subs_service.get_subs_by_user(user_name=user_name)
+    return subs
+
 
 @router.post(
     "/",

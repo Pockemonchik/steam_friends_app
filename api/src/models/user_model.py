@@ -1,6 +1,6 @@
 from typing import List, TYPE_CHECKING
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, mapped_column
 from schemas.user_schema import UserSchema
 from .base_model import BaseModel
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class UserModel(BaseModel):
     __tablename__ = "users"
 
-    username: Mapped[str]
+    username: Mapped[str] = mapped_column(index=True, unique=True)
     steam_id: Mapped[str]
     chat_id: Mapped[str]
     subscribes: Mapped[List["SubscribeModel"]] = relationship(back_populates="user")
