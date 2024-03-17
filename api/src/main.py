@@ -46,7 +46,7 @@ async def send_steam_task() -> None:
 
 @app.post("/run_steam_task")
 async def run_steam_task_celery() -> None:
-    from celery.tasks import steam_parse_task
+    from .celery.tasks import steam_parse_task
     steam_parse_task.delay()
     return 0
 

@@ -14,6 +14,10 @@ class SubscribeService:
     async def get_subs(self):
         subs = await self.subs_repo.find_all()
         return subs
+    
+    async def get_subs_with_users(self):
+        subs = await self.subs_repo.find_all_with_users()
+        return subs
 
     async def get_sub(self, id: int):
         sub = await self.subs_repo.find_one(id=id)

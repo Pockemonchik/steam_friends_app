@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from models import SubscribeModel
 from repositories.base import SQLAlchemyRepository
 
@@ -18,3 +19,14 @@ class SubsRepository(SQLAlchemyRepository):
             return None
         await self.session.close()
         return result
+    
+
+    async def find_all_with_users(self):
+        stmt = select(self.model).options(joinedload(self.model.user))
+        data = await self.session.execute(stmt)
+        obj_list = data.all()
+        result = [row[0] for row in obj_list]
+        await self.session.close()
+        return result
+    
+    
