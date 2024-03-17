@@ -20,6 +20,7 @@ asyncpg = "^0.29.0"
 celery = "^5.3.6"
 redis = "^5.0.3"
 flower = "^2.0.1"
+sqladmin = "^0.16.1"
 
 
 [tool.poetry.group.test.dependencies]

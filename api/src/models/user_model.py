@@ -24,3 +24,6 @@ class UserModel(BaseModel):
             username=self.username,
             steam_id=self.steam_id,
         )
+
+    def __str__(self):
+        return self.username

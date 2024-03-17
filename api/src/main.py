@@ -1,11 +1,14 @@
 import uvicorn
 import json
+from db.db_helper import db_helper
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from core.config import settings
 from routing.routers import all_routers
 from utils.produser import AIOWebProducer
-from aiokafka import AIOKafkaProducer
+from sqladmin import Admin
+from db.admin import UserAdmin, SubsAdmin
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -15,6 +18,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="API для SteamFriendsBot", lifespan=lifespan)
 
 
+admin = Admin(app, db_helper.engine)
+admin.add_view(UserAdmin)
+admin.add_view(SubsAdmin)
+
+
 @app.post("/send_notify")
 async def send_notify() -> None:
     message_to_produce = json.dumps(
@@ -22,12 +30,6 @@ async def send_notify() -> None:
     ).encode(encoding="utf-8")
     producer = AIOWebProducer(topic=settings.kafka_notify_topic)
     await producer.send(value=message_to_produce)
-
-@app.post("/create_task")
-async def create_task() -> None:
-    from .celery.tasks import test1
-    test1.delay()
-    return 0
 
 
 @app.post("/send_steam_task")
