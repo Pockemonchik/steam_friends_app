@@ -16,7 +16,7 @@ async def get_friends(
     params: Annotated[SteamFriendsSchema, Depends()],
     user_service: Annotated[UserService, Depends(user_service)],
 ):
-    user = await user_service.get_user_by_name(name=params.username)
+    user = await user_service.get_user_by_name(username=params.username)
     message_to_produce = json.dumps(
         {
             "telegram_id": user.chat_id,
