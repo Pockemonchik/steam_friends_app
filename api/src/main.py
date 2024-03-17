@@ -44,6 +44,11 @@ async def send_steam_task() -> None:
     producer = AIOWebProducer(topic=settings.kafka_steam_topic)
     await producer.send(value=message_to_produce)
 
+@app.post("/run_steam_task")
+async def run_steam_task_celery() -> None:
+    from celery.tasks import steam_parse_task
+    steam_parse_task.delay()
+    return 0
 
 for router in all_routers:
     app.include_router(router)

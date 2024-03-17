@@ -1,5 +1,7 @@
-import os
+import json
 import time
+import asyncio
+from utils.produser import AIOWebProducer
 from services.subscribe_service import SubscribeService 
 from .worker import worker
 from celery.schedules import crontab
@@ -7,14 +9,30 @@ from repositories import UsersRepository,SubsRepository
 from services.user_service import UserService
 from services.subscribe_service import SubscribeService
 from db.db_helper import db_helper
+from core.config import settings
 
-
-@worker.task(name="steam_parse_task")
-def steam_parse_task():
+async def steam_parse_message():
+    """Отправка в кафу запрос на парсинг данных по подписке"""
     print("steam_parse_task start")
     time.sleep(int(1) * 3)
     subscribe_service = SubscribeService(SubsRepository(db_helper.get_scoped_session()))
-    
+    subs = await subscribe_service.get_subs()
+    for sub in subs:
+        print("sum.")
+        # message_to_produce = json.dumps(
+        #     {
+        #         "telegram_id": "483123399",
+        #         "message": "message_to_produce",
+        #         "steam_id": "76561198381522154",
+        #     }
+        # ).encode(encoding="utf-8")
+        # producer = AIOWebProducer(topic=settings.kafka_steam_topic)
+        # await producer.send(value=message_to_produce)
+    return True
+
+@worker.task(name="steam_parse_task")
+def steam_parse_task():
+    asyncio.run(steam_parse_message())
     return True
 
 @worker.task(name="test")
