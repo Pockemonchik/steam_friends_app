@@ -6,8 +6,8 @@ class UsersRepository(SQLAlchemyRepository):
     model = UserModel
 
     # тут надо переделать на фильтр по любому полю
-    async def find_one_by_name(self, name: str):
-        statement = select(self.model).filter_by(username=name)
+    async def find_one_by_name(self, username: str):
+        statement = select(self.model).filter_by(username=username)
         print("stmt",statement)
         res = await self.session.execute(statement)
         obj_list = res.all()

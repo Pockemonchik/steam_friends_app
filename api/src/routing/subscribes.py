@@ -1,5 +1,5 @@
-from typing import Annotated
-from fastapi import APIRouter, Depends, status,HTTPException
+from typing import Annotated, Optional
+from fastapi import APIRouter, Depends, status, HTTPException, Body
 
 
 from schemas.subscribe_shema import (
@@ -8,7 +8,7 @@ from schemas.subscribe_shema import (
     SubscribeSchemaUpdate,
     SubscribeSchemaUpdatePartial,
 )
-from routing.dependencies import subs_service
+from routing.dependencies import subs_service, user_service
 from services.subscribe_service import SubscribeService
 
 router = APIRouter(prefix="/subs", tags=["subs"])
@@ -21,9 +21,10 @@ async def get_subs(
     subs = await subs_service.get_subs()
     return subs
 
+
 @router.get("/user-subs/", response_model=list[SubscribeSchema])
 async def get_subs_by_user(
-    user_name:str,
+    user_name: str,
     subs_service: Annotated[SubscribeService, Depends(subs_service)],
 ):
     subs = await subs_service.get_subs_by_user(user_name=user_name)
@@ -35,9 +36,15 @@ async def get_subs_by_user(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_sub(
+    username: Annotated[str, Body()],
     sub: SubscribeSchemaCreate,
     subs_service: Annotated[SubscribeService, Depends(subs_service)],
+    user_service: Annotated[SubscribeService, Depends(user_service)],
 ):
+    """Создание подписки для пользователя по имени или id"""
+    if not sub.user_id in sub:
+        user = await user_service.get_user_by_username(username=username)
+        sub.user_id = user.id
     sub_id = await subs_service.add_sub(sub)
     return {"sub_id": sub_id}
 

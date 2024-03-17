@@ -1,13 +1,15 @@
 from pydantic import BaseModel, ConfigDict
-
+from typing import Optional
 
 class SubscribeSchemaBase(BaseModel):
     user_id: int
     gamer_name: str
     game: str
 
-class SubscribeSchemaCreate(SubscribeSchemaBase):
-    pass
+class SubscribeSchemaCreate(BaseModel):
+    user_id: Optional[int] = None
+    gamer_name: str 
+    game: str
 
 
 class SubscribeSchemaUpdate(SubscribeSchemaCreate):
