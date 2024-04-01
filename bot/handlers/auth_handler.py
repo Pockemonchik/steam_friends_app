@@ -30,6 +30,7 @@ async def id_handler(message: types.Message, digits: Match[str]):
 
 
 @router.message(Command("register"))
+@router.callback_query(F.data == "register")
 async def register_handler(message: Message) -> None:
     text = markdown.text(
         markdown.markdown_decoration.quote(

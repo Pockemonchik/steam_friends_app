@@ -2,11 +2,12 @@ from aiogram import Router
 from aiogram import types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram.utils import markdown
+from aiogram import F 
 
 from message_temlates import *
-
+from keyboards.main_kb import menu
 router = Router()
 
 
@@ -15,24 +16,16 @@ async def start_handler(message: Message) -> None:
     """
     This handler receives messages with `/start` command
     """
-    kb = [
-        [types.KeyboardButton(text="/help")],
-        [types.KeyboardButton(text="/description")],
-    ]
-    keyboard = types.ReplyKeyboardMarkup(
-        keyboard=kb, resize_keyboard=True, input_field_placeholder="Что будем делать?"
-    )
+
     await message.answer(
-        f"Hello, {(message.from_user.full_name)}", reply_markup=keyboard
+        f"Hello, {message.from_user.full_name}", reply_markup=menu
     )
 
 
-@router.message(Command("help"))
-async def help_handler(message: types.Message):
-    print("message.chat.id", message.chat.id)
-    await message.answer(text=HELP_COMMAND, parse_mode="HTML")
-    await message.delete()
 
+@router.callback_query(F.data == "help")
+async def help_handler(callback: CallbackQuery):
+    await callback.message.answer(text=HELP_COMMAND, parse_mode="HTML")
 
 @router.message(Command("description"))
 async def description_handler(message: Message) -> None:
