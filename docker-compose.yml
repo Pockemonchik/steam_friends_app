@@ -61,16 +61,16 @@ services:
       - celery-worker
       - celery-beat
     
-  # bot:
-  #   build: ./bot
-  #   command: "python main.py"
-  #   tty: true
-  #   volumes:
-  #     - ./bot/:/usr/src/app/
-  #   ports:
-  #     - 2000:2000
-  #   env_file: 
-  #     - ./.env.dev
+  bot:
+     build: ./bot
+     command: "python main.py"
+     tty: true
+     volumes:
+       - ./bot/:/usr/src/app/
+     ports:
+       - 2000:2000
+     env_file:
+       - ./.env.dev
 
   # steam:
   #   build: ./steam
