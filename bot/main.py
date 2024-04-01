@@ -92,7 +92,7 @@ async def description_handler(message: Message) -> None:
         ),
         sep="\n",
     )
-
+    print(1)
     await message.answer(
         text=text,
         parse_mode=ParseMode.MARKDOWN_V2,
