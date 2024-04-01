@@ -12,7 +12,7 @@ class Sub(StatesGroup):
 router = Router()
 
 @router.callback_query(F.data == "subs_menu")
-async def subs_menu_handler(callback: CallbackQuery, state: FSMContext):
+async def subs_menu_handler(callback: CallbackQuery):
     await callback.message.answer(
         f"📩 Работа с подписками", reply_markup=subs_menu
     )
