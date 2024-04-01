@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram import types
 from aiogram.filters import Command
 
-import api_client
+from utils import api_client
 
 router = Router()
 

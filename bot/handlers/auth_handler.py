@@ -8,7 +8,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.utils import markdown
 
-import api_client
+from utils import api_client
 
 router = Router()
 
