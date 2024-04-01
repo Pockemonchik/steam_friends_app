@@ -46,5 +46,6 @@ async def input_game_name(message: Message, state: FSMContext):
 async def input_game_name(message: Message, state: FSMContext):
     await state.update_data(period=message.text.lower())
     print("state.get_data()")
-    print(await state.get_data())
-    await message.answer("Подписка создается ...")
+    res = await state.get_data()
+    await message.answer(f"Подписка создается ...{res}")
+    await state.clear()
