@@ -14,10 +14,18 @@ class SubscribeService:
     async def get_subs(self):
         subs = await self.subs_repo.find_all()
         return subs
+    
+    async def get_subs_with_users(self):
+        subs = await self.subs_repo.find_all_with_users()
+        return subs
 
     async def get_sub(self, id: int):
         sub = await self.subs_repo.find_one(id=id)
         return sub
+
+    async def get_subs_by_user(self, user_name: str):
+        subs = await self.subs_repo.filter_by_user(user_name=user_name)
+        return subs
 
     async def update_sub(self, id: int, sub: SubscribeSchemaCreate):
         sub_dict = sub.model_dump()

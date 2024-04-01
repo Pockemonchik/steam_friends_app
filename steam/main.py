@@ -15,9 +15,9 @@ kafka_client_id: str = os.environ.get("KAFKA_CLEIENT_ID", "python-producer")
 
 
 async def send_friends_info(tg_id, message) -> None:
-    message_to_produce = json.dumps(
-        {"telegram_id": tg_id, "message": message}
-    ).encode(encoding="utf-8")
+    message_to_produce = json.dumps({"telegram_id": tg_id, "message": message}).encode(
+        encoding="utf-8"
+    )
     producer = AIOKafkaProducer(bootstrap_servers=kafka_server)
     await producer.start()
     try:
@@ -27,7 +27,14 @@ async def send_friends_info(tg_id, message) -> None:
 
 
 async def consume_friends() -> None:
-    """Слушатель входящих запросов на инфу о друзях"""
+    """Слушатель входящих запросов на инфу о друзях
+    формат сообщения
+    {
+        "telegram_id": sub.user.chat_id,
+        "game": "",
+        "gamer_name": "",
+        "steam_id": sub.user.steam_id,
+    }"""
     consumer = AIOKafkaConsumer(
         kafka_steam_topic,
         bootstrap_servers=kafka_server,
@@ -39,7 +46,8 @@ async def consume_friends() -> None:
             print("Начинаеи обработку запроса о друзьях")
             result = steam_service.get_steam_user_friends_info(
                 steam_id=str(serialized.get("steam_id")),
-                filter_str=str(serialized.get("filter")),
+                gamer_name=str(serialized.get("gamer_name")),
+                game=str(serialized.get("game")),
             )
             await send_friends_info(serialized.get("telegram_id"), result)
     except Exception as e:

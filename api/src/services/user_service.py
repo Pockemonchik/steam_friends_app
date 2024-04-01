@@ -19,8 +19,8 @@ class UserService:
         user = await self.users_repo.find_one(id=id)
         return user
 
-    async def get_user_by_name(self, name: str):
-        user = await self.users_repo.find_one_by_name(name=name)
+    async def get_user_by_username(self, username: str):
+        user = await self.users_repo.find_one_by_name(username=username)
         return user
 
     async def update_user(self, id: int, user: UserSchemaCreate):
